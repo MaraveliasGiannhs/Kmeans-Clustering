@@ -4,18 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//namespace ConsoleApp1
-//{
-    public class Person
+
+public class Person
+{
+    public double income;
+    public double age;
+    public Person(double income, double age)
     {
-        public object income;
-
-        public Person(object income)
-        {
-            this.income = income;
-        }
-
-
-
+        this.income = income;
+        this.age =age;
     }
-//}
+    public void SetAge(double age)
+    {
+        this.age = age;
+    }
+
+    public void SetIncome(double income)
+    {
+        this.income = income;
+    }
+
+
+
+}
+
