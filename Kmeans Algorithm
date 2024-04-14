@@ -1,75 +1,81 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Accord.MachineLearning;
-using Accord.Math;
-using Accord.Statistics.Kernels;
+using System.IO;
+using OfficeOpenXml;
 
-
-class K_MeansAlgorithm
+class Program
+{
+    static void Main(string[] args)
     {
-
-    public double[] x = new double[10];
-    public double[] y = new double[10];
-
-
-    public void AssignDataFromPerson(double age,double income, int i)
-    {
-        this.x[i] = age;
-        this.y[i] = income;
-
-    }
-
-    public void Init(/*double[] data*/)
-    {
+        // Path to the Excel file
+        string filePath = "C:\\Users\\giann\\OneDrive\\Desktop\\Book (1).xlsx";
+        K_MeansAlgorithm kMeansAlgo = new K_MeansAlgorithm();
 
 
-        // Perform KMeans clustering on each dataset
-        /*for (int i = 0; i < this.x.Length; i++)
+        // Check if the file exists
+        if (!File.Exists(filePath))
         {
-            //List<double[]> data = datasets[i];
-
-            //int k = 3; // Number of clusters
-            Console.WriteLine($"Dataset {i + 1}");
-
-            Console.WriteLine();
-        }*/
-        PerformKMeansClustering(this.x, this.y);
-
-    }
-
-    static public void PerformKMeansClustering(double[] data1,double[] data2)
-    {
-        int k = 3;
-        
-
-        // Create KMeans algorithm
-        KMeans kmeans = new KMeans(k);
-        
-        List<double[]> data = new List<double[]>();
-
-        data.Add(data1);
-        data.Add(data2);
-
-        // Compute clusters
-        int[] clusterAssignments = kmeans.Compute(data.ToArray());
-
-        // Print cluster assignments for data1
-        Console.WriteLine("Cluster assignments for data1:");
-        for (int i = 0; i < clusterAssignments.Length / 2; i++)
-        {
-            Console.WriteLine($"Data point {i + 1} belongs to cluster {clusterAssignments[i] + 1}");
+            Console.WriteLine("The Excel file does not exist.");
+            return;
         }
 
-        // Print cluster assignments for data2
-        Console.WriteLine("Cluster assignments for data2:");
-        for (int i = clusterAssignments.Length / 2; i < clusterAssignments.Length; i++)
+        Person[] person = new Person[10];
+        for (int i = 0; i < person.Length; i++)
+            person[i] = new Person(0, 0);
+
+        // Read data from the Excel file
+        try
         {
-            Console.WriteLine($"Data point {i - clusterAssignments.Length / 2 + 1} belongs to cluster {clusterAssignments[i] + 1}");
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(filePath)))
+            {
+                // Get the first worksheet in the Excel file
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+
+                // Get the number of rows and columns in the worksheet
+                int rowCount = worksheet.Dimension.Rows;
+                int colCount = worksheet.Dimension.Columns;
+
+                
+
+                // Read data from the worksheet
+                for (int row = 1; row <= rowCount; row++)
+                {
+                    for (int col = 1; col <= colCount; col++)
+                    {
+
+                        // Get the value at the current cell
+                        object cell = worksheet.Cells[row, col].Value;
+
+                        //Convert to double
+                        double cellValue = Convert.ToDouble(cell);
+
+                        //Assign it to person's data
+                        if (row == 1)
+                        {
+                            
+                            person[col-1].SetAge(cellValue);
+                        }
+                        else
+                        {
+                            person[col - 1].SetIncome(cellValue);
+
+                            //Pass each person's data to the algorithm
+                            kMeansAlgo.AssignDataFromPerson(person[col - 1].age, person[col -1].income, col - 1);
+                        }
+                        // Print the cell value
+                        Console.Write(person[col-1].income + "\t");
+                    }
+
+                    Console.WriteLine();
+                }
+                kMeansAlgo.Init();
+
+                
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occurred while reading the Excel file: " + ex.Message);
         }
     }
-
-
 }
