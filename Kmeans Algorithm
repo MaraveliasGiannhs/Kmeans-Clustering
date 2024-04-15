@@ -27,16 +27,8 @@ class K_MeansAlgorithm
 
 
         // Perform KMeans clustering on each dataset
-        /*for (int i = 0; i < this.x.Length; i++)
-        {
-            //List<double[]> data = datasets[i];
-
-            //int k = 3; // Number of clusters
-            Console.WriteLine($"Dataset {i + 1}");
-
-            Console.WriteLine();
-        }*/
-        PerformKMeansClustering(/*this.x, this.y*/);
+       
+        PerformKMeansClustering();
 
     }
 
